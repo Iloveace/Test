@@ -1,5 +1,6 @@
 #include <iostream>
 #include <algorithm>
+#include <charconv>
 #include <cstdint>
 #include <vector>
 #include <fstream>
@@ -202,17 +203,61 @@ void write_output(const std::vector<range>& ranges)
     }
     std::cout << "output.txt" << "Done!\n";
 }
-int main(int argc, char* argv[])
+/*
+    This function validates the command line arguments 
+    and converts them to uint32_t values on succes. 
+    It also prints reasons for invalid arguments
+*/
+bool is_valid_argument(std::string_view arg, uint32_t &value)
+{
+    if (arg.empty())
+    {
+        std::cerr << "Invalid argument: argument cannot be empty\n";
+        return false;
+    }
+    std::from_chars_result result{std::from_chars(arg.data(), arg.data() + arg.size(), value)};
+    if (result.ec == std::errc() && result.ptr == arg.data() + arg.size())
+    {
+        return true;
+    }
+    // We parsed well but there are invalid characters at some point in the string...
+    if (result.ec == std::errc())
+    {
+        std::cerr << "Invalid argument: '" << arg
+                  << "' contains invalid characters starting at '" << *result.ptr << "'. Its type must be a unsigned 32 integer. \n";
+    }
+    // Parsing didn't go through because its an invalid type
+    else if (result.ec == std::errc::invalid_argument)
+    {
+        std::cerr << "Invalid argument: '" << arg << "' is not a valid unsigned 32 integer.\n";
+    }
+    // Overflow error
+    else
+    {
+        std::cerr << "Overflow error: " << arg << " is too large for unsigned 32 integer\n";
+    }
+    return false;
+}
+int main(int argc, char *argv[])
 {
 
-    if (argc < 2)
+    if (argc != 3)
     {
-
+        std::cerr << "Error: Invalid number of arguments\n"
+                  << "Usage: " << argv[0]
+                  << " <max_value_count> <max_point_distance>\n";
+        return 1;
     }
-    std::uint32_t mVC{static_cast<std::uint32_t>(std::stoul(argv[1]))};
-    std::uint32_t mPD{static_cast<std::uint32_t>(std::stoul(argv[2]))};
+    uint32_t mVC{};
+    uint32_t mPD{};
+    if (!is_valid_argument(argv[1], mVC) || !is_valid_argument(argv[2], mPD))
+    {
+        return 1;
+    }
 
     range_set rs{mVC, mPD};
+    generate_points_file();
+    generate_ranges_file();
 
     load_points(rs);
     load_ranges(rs);
