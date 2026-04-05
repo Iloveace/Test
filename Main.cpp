@@ -205,7 +205,7 @@ void write_output(const std::vector<range>& ranges)
 }
 /*
     This function validates the command line arguments 
-    and converts them to uint32_t values on succes. 
+    and converts them to uint32_t values on success. 
     It also prints reasons for invalid arguments
 */
 bool is_valid_argument(std::string_view arg, uint32_t &value)
