@@ -5,7 +5,7 @@
 .vscode/
 
 # Ignore .object files
-*.object
+*.o
 
 #ignore .exe files
 *.exe

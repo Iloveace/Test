@@ -62,7 +62,7 @@ jobs:
 
       - name: Create AppImage
         run: |
-          ARCH=x86_64 ./appimagetool.AppImage AppDir Test-x86_64.AppImage
+          ARCH=x86_64 ./appimagetool.AppImage --appimage-extract-and-run AppDir Test-x86_64.AppImage
 
       - name: Upload Linux artifact
         uses: actions/upload-artifact@v4
