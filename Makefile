@@ -1,20 +1,18 @@
-# Compiler and flags
-CXX = g++
-CXXFLAGS = -std=c++17 -Wall -Wextra -pedantic -O2
+# Allow environment/workflow to override these
+CXX ?= g++
+CXXFLAGS ?= -std=c++17 -Wall -Wextra -pedantic -O2
+TARGET ?= Test
 
-# Target executable name
-TARGET = Test
+# Source files to compile
+SRCS = Main.cpp
 
-# Source files
-SRCS = Main.cpp Point3d.cpp Vector3d.cpp 
-
-# Object files (automatically generated from SRCS)
+# Object files derived from source files
 OBJS = $(SRCS:.cpp=.o)
 
-# Default rule: build the app
+# Default build
 all: $(TARGET)
 
-# Debug build (no optimization, with debug symbols)
+# Debug build with no optimizations and debug symbols
 debug: CXXFLAGS := -std=c++17 -Wall -Wextra -pedantic -g -O0
 debug: clean $(TARGET)
 
@@ -22,13 +20,13 @@ debug: clean $(TARGET)
 $(TARGET): $(OBJS)
 	$(CXX) $(CXXFLAGS) -o $(TARGET) $(OBJS)
 
-# Compile .cpp files into .o files
+# Compile cpp to object files
 %.o: %.cpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-# Clean up build files
+# Clean build artifacts
 clean:
-	rm -f $(OBJS) $(TARGET)
+	rm -f $(OBJS) $(TARGET) Test.exe Test
 
-# Phony targets to prevent conflicts with files named 'all' or 'clean'
-.PHONY: all clean
+# Phony targets to prevent conflicts with files of the same name
+.PHONY: all debug clean

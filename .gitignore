@@ -1,0 +1,11 @@
+# Ignore all text files
+*.txt
+
+#Ignore VS Code settings
+.vscode/
+
+# Ignore .object files
+*.object
+
+#ignore .exe files
+*.exe

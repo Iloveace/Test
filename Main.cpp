@@ -1,31 +1,31 @@
-#include <iostream>
 #include <algorithm>
 #include <charconv>
 #include <cstdint>
-#include <vector>
 #include <fstream>
-#include <string_view>
+#include <iostream>
 #include <random>
+#include <string>
+#include <string_view>
+#include <vector>
 
 struct range
 {
     std::uint32_t start_point{};
     std::uint32_t end_point{};
     std::uint32_t value_count{};
-
 };
 
 class range_set
 {
 
-private:
+  private:
     std::uint32_t m_max_value_count{};
     std::uint32_t m_max_point_distance{};
 
     std::vector<range> m_ranges{};
 
-    //compare ranges
-    bool compare_ranges(const range& a, const range& b)
+    // compare ranges
+    static bool compare_ranges(const range &a, const range &b)
     {
         if (a.start_point != b.start_point)
         {
@@ -33,20 +33,20 @@ private:
         }
         return a.end_point < b.end_point;
     }
-    bool can_merge(const range& a, const range& b) const
+    bool can_merge(const range &a, const range &b) const
     {
         std::uint64_t merged_start{std::min(a.start_point, b.start_point)};
         std::uint64_t merged_end{std::max(a.end_point, b.end_point)};
         std::uint64_t merged_value_count{static_cast<std::uint64_t>(a.value_count) + static_cast<std::uint64_t>(b.value_count)};
         return merged_value_count <= m_max_value_count && (merged_end - merged_start) <= m_max_point_distance;
-
     }
-    range merge_ranges(const range& a, const range& b)
+    range merge_ranges(const range &a, const range &b)
     {
         return {std::min(a.start_point, b.start_point), std::max(a.end_point, b.end_point), static_cast<std::uint32_t>(a.value_count + b.value_count)};
     }
-public:
-    range_set(std::uint32_t  max_value_count, std::uint32_t max_point_distance) : m_max_value_count(max_value_count), m_max_point_distance(max_point_distance) {}
+
+  public:
+    range_set(std::uint32_t max_value_count, std::uint32_t max_point_distance) : m_max_value_count(max_value_count), m_max_point_distance(max_point_distance) {}
 
     void add_point(std::uint32_t p)
     {
@@ -66,7 +66,7 @@ public:
     }
     bool contains(std::uint32_t p)
     {
-        for (const auto& r : m_ranges)
+        for (const auto &r : m_ranges)
         {
             if (p >= r.start_point && p <= r.end_point)
             {
@@ -80,7 +80,7 @@ public:
     {
         if (m_ranges.empty())
         {
-            return{};
+            return {};
         }
         std::vector<range> sort{m_ranges};
         std::sort(sort.begin(), sort.end(), compare_ranges);
@@ -99,14 +99,13 @@ public:
             }
         }
         return result;
-
     }
-
-
 };
 
 void generate_points_file()
 {
+    constexpr std::uint32_t max_value{(1 << 30) - 1};
+    constexpr std::uint32_t loop_range{1'000'000};
     std::ofstream points("points.txt");
     if (!points)
     {
@@ -115,36 +114,40 @@ void generate_points_file()
     }
     std::random_device rd{};
     std::mt19937 gen(rd());
-    std::uniform_int_distribution<std::uint32_t> dist(0, (1 << 30) - 1);
+    std::uniform_int_distribution<std::uint32_t> dist(0, max_value);
 
-    for (int i = 0; i < 1'000'000; ++i)
+    for (int i = 0; i < loop_range; ++i)
     {
         points << dist(gen) << '\n';
     }
-    std::cout << "points.txt\n" << "Generation Complete\n";
+    std::cout << "points.txt\n"
+              << "Generation Complete\n";
 }
 void generate_ranges_file()
 {
+    std::uint32_t max_value{(1 << 29) - 1};
+    std::uint32_t loop_range{10'000};
     std::ofstream ranges("ranges.txt");
     if (!ranges)
     {
         std::cerr << "Could not create " << "ranges.txt\n";
     }
     std::random_device rd{};
-    std::mt19937 gen (rd());
-    std::uniform_int_distribution<std::uint32_t> start_dist(0, (1 << 29) - 1);
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<std::uint32_t> start_dist(0, max_value);
     std::uniform_int_distribution<std::uint32_t> length_dist(128, 1024);
 
-    for (int i{0}; i < 10'000; ++i)
+    for (int i{0}; i < loop_range; ++i)
     {
         std::uint32_t a{start_dist(gen)};
         std::uint32_t b{a + length_dist(gen)};
         ranges << a << ":" << b << "\n";
     }
-    std::cout << "ranges.txt\n" << "Generation Complete\n";
+    std::cout << "ranges.txt\n"
+              << "Generation Complete\n";
 }
 
-void load_points(range_set& rs)
+void load_points(range_set &rs)
 {
     std::ifstream points("points.txt");
     if (!points)
@@ -158,7 +161,7 @@ void load_points(range_set& rs)
         rs.add_point(p);
     }
 }
-void load_ranges(range_set& rs)
+void load_ranges(range_set &rs)
 {
     std::ifstream ranges("ranges.txt");
     if (!ranges)
@@ -187,9 +190,8 @@ void load_ranges(range_set& rs)
         }
         rs.add_range({start, end, end - start + 1});
     }
-
 }
-void write_output(const std::vector<range>& ranges)
+void write_output(const std::vector<range> &ranges)
 {
     std::ofstream output("output.txt");
     if (!output)
@@ -197,15 +199,15 @@ void write_output(const std::vector<range>& ranges)
         std::cerr << "Could not create" << "output.txt" << '\n';
         return;
     }
-    for (const auto& r : ranges)
+    for (const auto &r : ranges)
     {
         output << r.start_point << ":" << r.end_point << ":" << r.value_count << '\n';
     }
     std::cout << "output.txt" << "Done!\n";
 }
 /*
-    This function validates the command line arguments 
-    and converts them to uint32_t values on success. 
+    This function validates the command line arguments
+    and converts them to uint32_t values on success.
     It also prints reasons for invalid arguments
 */
 bool is_valid_argument(std::string_view arg, uint32_t &value)
