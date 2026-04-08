@@ -1,5 +1,9 @@
 name: Cross-Platform C++ Build
 
+# Temporary workaround for Node.js build warning...
+env: ACTIONS_ALLOW_UNSECURE_COMMANDS: true
+
+
 on:
   push:
     branches: [ main ]
