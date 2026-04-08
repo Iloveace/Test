@@ -65,7 +65,7 @@ jobs:
           ARCH=x86_64 ./appimagetool.AppImage --appimage-extract-and-run AppDir Test-x86_64.AppImage
 
       - name: Upload Linux artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: Test-linux
           path: Test-x86_64.AppImage
@@ -94,7 +94,7 @@ jobs:
         run: make TARGET=Test.exe
 
       - name: Upload Windows artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: Test-windows
           path: Test.exe
@@ -112,7 +112,7 @@ jobs:
         run: make CXX=clang++ TARGET=Test
 
       - name: Upload macOS artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: Test-macos
           path: Test
@@ -126,19 +126,19 @@ jobs:
 
     steps:
       - name: Download Linux artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           name: Test-linux
           path: release-assets/linux
 
       - name: Download Windows artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           name: Test-windows
           path: release-assets/windows
 
       - name: Download macOS artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           name: Test-macos
           path: release-assets/macos
